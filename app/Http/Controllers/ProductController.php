@@ -14,7 +14,8 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return view('products.index');
+        $products = Product::all();
+        return view('products.index', ['products' => $products]);
     }
 
     /**
@@ -24,7 +25,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        return view('products.create');
     }
 
     /**
@@ -35,7 +36,15 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'price' => 'required',
+            'stock' => 'required',
+        ]);
+
+        Product::create($request->all());
+        return redirect()->route('index')
+                ->with('success', 'Product created successfully.');
     }
 
     /**
@@ -44,9 +53,10 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function view($id)
     {
-        //
+        $product = Product::find($id);
+        return view('products.view', ['product' => $product]);
     }
 
     /**
@@ -57,7 +67,8 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        //
+        $product = Product::find($id);
+        return view('products.edit', ['product' => $product]);
     }
 
     /**
@@ -69,7 +80,17 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required',
+            'price' => 'required',
+            'stock' => 'required',
+        ]);
+
+        $product = Product::find($id);
+        $product->update($request->all());
+
+        return redirect()->route('index')
+            ->with('success', 'Product updated successfully');
     }
 
     /**
@@ -80,6 +101,10 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $product = Product::find($id);
+        $product->delete();
+
+        return redirect()->route('index')
+        ->with('success', 'Product deleted successfully');
     }
 }
